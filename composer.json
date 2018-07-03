@@ -1,13 +1,13 @@
 {
     "name": "phalapi/wechatmini",
-    "description": "微信小程序扩展",
-    "type": "library",
+    "description": "PhalApi 2.x 微信小程序扩展",
     "keywords": [
         "phalapi", "phalapi-wechatmini", "wechatmini", "微信小程序", "小程序"
     ],
     "license": "GPL-3.0+",
+    "homepage": "https://www.phalapi.net/",
+    "type": "library",
     "minimum-stability": "dev",
-    "homepage": "http://www.jmideas.cn/",
     "authors": [
         {
             "name": "JamesLiu",
@@ -17,11 +17,11 @@
         }
     ],
     "require": {
-		"php": ">=5.3.0"
+        "php": ">=5.3.3"
     },
     "autoload": {
         "psr-4": {
             "PhalApi\\Wechatmini\\": "src"
         }
-    }
+    } 
 }
