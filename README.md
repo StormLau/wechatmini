@@ -12,8 +12,8 @@ PhalApi 2.x 微信小程序扩展
 
 ```php
 'Wechatmini' => array(
-        'appid' => '123456789',
-        'secret_key' => '123456789',
+        'appid' => '你的appid',
+        'secret_key' => '微信小程序后台生成的secret_key，请勿随便修改',
     ),
 ```
 
@@ -28,8 +28,16 @@ $di->wechatmini = function() {
 
 ## 使用
 
+### 获取openid
+
 ```php
-\PhalApi\DI()->wechatmini->getOpenid('小程序返回的code');
+\PhalApi\DI()->wechatmini->getOpenid('小程序返回请求的code');
+```
+
+### 获取access_token
+
+```php
 \PhalApi\DI()->wechatmini->getToken();
 ```
+
 
