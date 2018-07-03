@@ -1,6 +1,6 @@
 <?php
 
-namespace PhalApi\Pinyin;
+namespace PhalApi\Wechatmini;
 
 use PhalApi\Exception\BadRequestException;
 
