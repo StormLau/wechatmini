@@ -7,7 +7,8 @@ return array(
      * 小程序后台生成的秘钥，不要随便修改
      */
     'Wechatmini' => array(
-        'appid' => '123456789',
-        'secret_key' => '123456789',
+        'appid' => '你的appid',
+        'secret_key' => '微信小程序后台生成的secret_key，请勿随便修改',
+        'mch_id' => '商户号',//不用支付可以不用配置
     ),
 );

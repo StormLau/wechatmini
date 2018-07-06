@@ -76,7 +76,6 @@ $di->wechatmini = function() {
 \PhalApi\DI()->wechatmini->getAccessToken();
 ```
 
-说明：直接获取access_token，不加任何处理，有次数限制，用此方法获取后可能会导致已经获取且在使用的token失效
 
 返回结果：
 
@@ -98,7 +97,6 @@ $di->wechatmini = function() {
 \PhalApi\DI()->wechatmini->msgSecCheck('待检测内容');
 ```
 
-说明：直接获取access_token，不加任何处理，有次数限制，用此方法获取后可能会导致已经获取且在使用的token失效
 
 返回结果：
 
@@ -106,4 +104,30 @@ $di->wechatmini = function() {
 | -------------  | ---------------------------------------------------|
 | ret   | 状态码：200表示数据获取成功                        |
 | data  | 返回数据，data                  |
+| msg | 错误提示信息：如：invalid credential, access_token is invalid or not latest hint: [qaUhIa01589041]|
+
+
+
+### 微信预支付
+
+
+说明：商户在小程序中先调用该接口在微信支付服务后台生成预支付交易单，返回正确的预支付交易后调起支付。
+
+
+```php
+\PhalApi\DI()->wechatmini->WxPay('付款者openid', '付款金额', '商品描述');
+```
+
+返回结果：
+
+|      返回字段      | 说明                                               |
+| -------------  | ---------------------------------------------------|
+| ret   | 状态码：200表示数据获取成功                        |
+| data  | 返回数据,数据获取失败时为空                 |
+| data.appId  | 微信分配的小程序ID                |
+| data.timeStamp  | 时间戳从1970年1月1日00:00:00至今的秒数,即当前的时间               |
+| data.nonceStr  | 随机字符串，长度为32个字符以下。                 |
+| data.package  | 统一下单接口返回的 prepay_id 参数值                 |
+| data.signType  | 签名算法，暂支持 MD5                 |
+| data.paySign  | 签名,具体签名方案参见小程序支付接口文档;                |
 | msg | 错误提示信息：如：invalid credential, access_token is invalid or not latest hint: [qaUhIa01589041]|
