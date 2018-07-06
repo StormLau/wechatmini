@@ -14,6 +14,7 @@ PhalApi 2.x 微信小程序扩展
 'Wechatmini' => array(
         'appid' => '你的appid',
         'secret_key' => '微信小程序后台生成的secret_key，请勿随便修改',
+        'mch_id' => '商户号',//不用支付可以不用配置
     ),
 ```
 
