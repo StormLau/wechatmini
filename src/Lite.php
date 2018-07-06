@@ -58,7 +58,7 @@ class Lite
 
     /**
      * 获取access_token
-     * @desc 直接获取access_token，不加任何处理，有次数限制
+     * @desc 直接获取access_token，不加任何处理，有次数限制，用此方法获取后可能会导致已经获取且在使用的token失效
      * @return array
      * @return int ret 状态码：200表示数据获取成功
      * @return array data 返回数据，access_token获取失败时为空
@@ -123,8 +123,8 @@ class Lite
     }
 
     /**
-     * 文字违规检测
-     * @desc 文字违规检测
+     * 文本违规检测
+     * @desc 检查一段文本是否含有违法违规内容。应用场景举例：用户个人资料违规文字检测；媒体新闻类用户发表文章，评论内容检测；游戏类用户编辑上传的素材(如答题类小游戏用户上传的问题及答案)检测等。频率限制：单个 appId 调用上限为 2000 次/分钟，1,000,000 次/天
      * @return array
      * @return int ret 状态码：200表示数据获取成功
      * @return array data 返回数据，ok表示内容正常;risky表示含有违法违规内容
@@ -143,7 +143,7 @@ class Lite
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data, JSON_UNESCAPED_UNICODE));
         $rs = curl_exec($ch);
         curl_close($ch);
         $jsondecode = json_decode($rs, true);
@@ -156,7 +156,7 @@ class Lite
 
     /**
      * 图片违规检测
-     * @desc 图片违规检测
+     * @desc 校验一张图片是否含有违法违规内容。应用场景举例：1）图片智能鉴黄：涉及拍照的工具类应用(如美拍，识图类应用)用户拍照上传检测；电商类商品上架图片检测；媒体类用户文章里的图片检测等；2）敏感人脸识别：用户头像；媒体类用户文章里的图片检测；社交类用户上传的图片检测等。频率限制：单个 appId 调用上限为 1000 次/分钟，100,000 次/天
      * @return array
      * @return int ret 状态码：200表示数据获取成功
      * @return array data 返回数据，ok表示内容正常;risky表示含有违法违规内容
