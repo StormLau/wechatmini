@@ -175,30 +175,48 @@ class Lite
         }
     }
 
+
     /**
-     * 图片违规检测
-     * @desc 校验一张图片是否含有违法违规内容。应用场景举例：1）图片智能鉴黄：涉及拍照的工具类应用(如美拍，识图类应用)用户拍照上传检测；电商类商品上架图片检测；媒体类用户文章里的图片检测等；2）敏感人脸识别：用户头像；媒体类用户文章里的图片检测；社交类用户上传的图片检测等。频率限制：单个 appId 调用上限为 1000 次/分钟，100,000 次/天
+     * 发送模板消息
+     * @desc 基于微信的通知渠道，我们为开发者提供了可以高效触达用户的模板消息能力，以便实现服务的闭环并提供更佳的体验。
      * @return array
-     * @return int ret 状态码：200表示数据获取成功
-     * @return array data 返回数据，ok表示内容正常;risky表示含有违法违规内容
-     * @return string msg 错误提示信息：如：invalid credential, access_token is invalid or not latest hint: [qaUhIa01589041]
+     * @return int ret 状态码：200表示数据获取成功,其他错误码可参考小程序错误码说明
+     * @return array data 返回数据，ok表示内容正常
+     * @return string msg 错误提示信息：如：form id used count reach limit hint: [P90MbA0846ge20]
      */
-    public function imgSecCheck($image)
+
+    public function sendWeAppMessage($touser, $formid, $template_id, $page, $emphasis_keyword, $data)
     {
         $access_token = $this->getAccessToken()['access_token'];
-        $url = 'https://api.weixin.qq.com/wxa/img_sec_check?access_token=' . $access_token;
+        if (!$touser) {
+            throw new BadRequestException('openid不允许为空', 600);
+        }
+        if (!$formid) {
+            throw new BadRequestException('formid不允许为空', 600);
+        }
+        if (!$template_id) {
+            throw new BadRequestException('template_id不允许为空', 600);
+        }
+        $url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' . $access_token;
         $post_data = array(
-            "media" => $image['tmp_name'],
+            "touser" => $touser,
+            "template_id" => $template_id,
+            "page" => $page,
+            "form_id" => $formid,
+            "emphasis_keyword" => $emphasis_keyword,
+            "data" => $data
         );
         $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "media=@test.jpg");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         $rs = curl_exec($ch);
         curl_close($ch);
         $jsondecode = json_decode($rs, true);
-        if ($jsondecode['errcode'] == 0 || $jsondecode['errcode'] == 87014) {
+        if ($jsondecode['errcode'] == 0) {
             return $jsondecode['errmsg'];
         } else {
             throw new BadRequestException($jsondecode['errmsg'], $jsondecode['errcode'] - 400);

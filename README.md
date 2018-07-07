@@ -104,9 +104,62 @@ $di->wechatmini = function() {
 |      返回字段      | 说明                                               |
 | -------------  | ---------------------------------------------------|
 | ret   | 状态码：200表示数据获取成功                        |
-| data  | 返回数据，data                  |
+| data  | 返回数据，ok表示内容正常;risky表示含有违法违规内容|
 | msg | 错误提示信息：如：invalid credential, access_token is invalid or not latest hint: [qaUhIa01589041]|
 
+
+### 发送模板消息
+
+说明：基于微信的通知渠道，我们为开发者提供了可以高效触达用户的模板消息能力，以便实现服务的闭环并提供更佳的体验。
+
+
+```php
+\PhalApi\DI()->wechatmini->sendWeAppMessage('touser', 'formid', 'template_id', 'page', 'emphasis_keyword', 'data');
+```
+
+参数说明：
+
+|      参数      | 必填 |说明                                               |
+| -------------  | -----|----------------------------------------------|
+| touser | 是 |接收者（用户）的 openid|
+| formid  | 是 |表单提交场景下，为 submit 事件带上的 formId；支付场景下，为本次支付的 prepay_id|
+| template_id | 是 |所需下发的模板消息的id（微信公众平台模板消息选择获取）|
+| page | 否 |点击模板卡片后的跳转页面，仅限本小程序内的页面。支持带参数,（示例index?foo=bar）。该字段不填则模板无跳转。|
+| emphasis_keyword  | 否 |模板需要放大的关键词，不填则默认无放大|
+| data | 是 |模板内容，不填则下发空模板|
+
+示例：
+
+```php
+$openid = '接收者（用户）的 openid';
+$form_id = "小程序端获取的formid",
+$template_id = 'eb_azL3MW76Hn_U9yu6GZOf5Lm90AROUruI1OdECYUQ';
+$page = 'pages/index/index';
+$emphasis_keyword = 'keyword2.DATA';
+$data = array(
+    "keyword1" => array("value" => "我们已收到您的反馈意见，感谢您的使用", "color" => "#173177"),
+    "keyword2" => array("value" => "感谢使用Phalapi", "color" => "#173177"));
+$res = \PhalApi\DI()->wechatmini->sendWeAppMessage($openid, $formid, $template_id, $page,$emphasis_keyword, $data);
+return $res;
+```
+
+返回结果：
+
+|      返回字段      | 说明                                               |
+| -------------  | ---------------------------------------------------|
+| ret   |状态码：200表示数据获取成功,其他错误码可参考小程序错误码说明|
+| data  | 返回数据，ok表示成功发送模板消息|
+| msg | 错误提示信息：错误提示信息：如：form id used count reach limit hint: [P90MbA0846ge20]|
+
+错误码说明：
+
+|      返回码      | 说明                                               |
+| -------------  | ---------------------------------------------------|
+| 40037   |template_id不正确|
+| 41028  |form_id不正确，或者过期|
+| 41029 | form_id已被使用|
+| 41030 | page不正确|
+| 45009 | 接口调用超过限额（目前默认每个帐号日调用限额为100万）|
 
 
 ### 微信预支付
