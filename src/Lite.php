@@ -224,6 +224,46 @@ class Lite
     }
 
     /**
+     * 微信小程序数据解密
+     * @desc 小程序可以通过各种前端接口获取微信提供的开放数据。 考虑到开发者服务器也需要获取这些开放数据，微信会对这些数据做签名和加密处理。 开发者后台拿到开放数据后可以对数据进行校验签名和解密，来保证数据不被篡改。
+     * @return array
+     * @return int ret 状态码：200表示数据获取成功,其他错误码可参考小程序错误码说明
+     * @return array data 返回解密后的数据
+     * @return string msg 错误提示信息
+     */
+
+    public function WXBizDataCrypt($sessionKey, $encryptedData, $iv)
+    {
+
+        if (!$encryptedData) {
+            throw new BadRequestException('待解密数据不允许为空', 600);
+        }
+
+        if (!$iv) {
+            throw new BadRequestException('加密算法的初始向量不允许为空', 600);
+        }
+
+        if (strlen($sessionKey) != 24) {
+            throw new BadRequestException('IllegalAesKey', -41001 - 400);
+        }
+        $aesKey = base64_decode($sessionKey);
+        if (strlen($iv) != 24) {
+            throw new BadRequestException('IllegalIv', -41002 - 400);
+        }
+        $aesIV = base64_decode($iv);
+        $aesCipher = base64_decode($encryptedData);
+        $result = openssl_decrypt($aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+        $dataObj = json_decode($result);
+        if ($dataObj == NULL) {
+            throw new BadRequestException('IllegalBuffer', -41003 - 400);
+        }
+        if ($dataObj->watermark->appid != $this->appid) {
+            throw new BadRequestException('IllegalBuffer', -41003 - 400);
+        }
+        return $dataObj;
+    }
+
+    /**
      * 微信支付
      * @desc 商户在小程序中先调用该接口在微信支付服务后台生成预支付交易单，返回正确的预支付交易后调起支付。
      * @return array
