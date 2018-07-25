@@ -16,6 +16,7 @@ class Lite
     protected $appid;
     protected $secret;
     protected $mch_id;
+    protected $mch_key;
 
     protected $openid;            //openid
     protected $out_trade_no;      //商户订单号
@@ -34,6 +35,8 @@ class Lite
         $this->appid = \PhalApi\DI()->config->get('app.Wechatmini')['appid'];
         $this->secret = \PhalApi\DI()->config->get('app.Wechatmini')['secret_key'];
         $this->mch_id = \PhalApi\DI()->config->get('app.Wechatmini')['mch_id'];
+        $this->mch_key = \PhalApi\DI()->config->get('app.Wechatmini')['mch_key'];
+
         if (!$this->appid) {
             throw new BadRequestException('请配置appid', 600);
         }
@@ -219,7 +222,8 @@ class Lite
         if ($jsondecode['errcode'] == 0) {
             return $jsondecode['errmsg'];
         } else {
-            throw new BadRequestException($jsondecode['errmsg'], $jsondecode['errcode'] - 400);
+            return $jsondecode['errmsg'];
+//            throw new BadRequestException($jsondecode['errmsg'], $jsondecode['errcode'] - 400);
         }
     }
 
@@ -283,6 +287,9 @@ class Lite
 
         if (!$this->mch_id) {
             throw new BadRequestException('请配置商户号', 600);
+        }
+        if (!$this->mch_key) {
+            throw new BadRequestException('请配置支付秘钥', 600);
         }
         if (!$openid) {
             throw new BadRequestException('openid不能为空', 600);
@@ -441,7 +448,7 @@ class Lite
         ksort($Parameters);
         $String = $this->formatBizQueryParaMap($Parameters, false);
         //签名步骤二：在string后加入KEY
-        $String = $String . "&key=" . $this->secret;
+        $String = $String . "&key=" . $this->mch_key;
         //签名步骤三：MD5加密
         $String = md5($String);
         //签名步骤四：所有字符转为大写
