@@ -52,7 +52,7 @@ $di->wechatmini = function() {
 
 
 
-### 获取 Unionid
+### 获取Unionid
 
 ```php
 \PhalApi\DI()->wechatmini->getUnionid('小程序返回请求的code'，'会话密钥', '解码内容');
