@@ -52,6 +52,26 @@ $di->wechatmini = function() {
 
 
 
+### 获取openid
+
+```php
+\PhalApi\DI()->wechatmini->getUnionid('小程序返回请求的code'，'会话密钥', '解码内容');
+```
+
+返回结果：
+
+|      返回字段      | 说明                                               |
+| -------------  | ---------------------------------------------------|
+| ret   | 状态码：200表示数据获取成功，其他错误码可参考小程序错误码说明                          |
+| data  | 返回数据，openid获取失败时为空                   |
+| data.openid  | 用户唯一标识                    |
+| data.session_key  | 会话密钥                    |
+| data.unionid  | 用户在开放平台的唯一标识符，满足UnionID下发条件的情况下这个才有                    |
+| msg | 错误提示信息：如：code been used, hints: [ req_id: OpwajA01912023 ]                    |
+
+
+
+
 ### 获取access_token
 
 说明：直接获取access_token，不加任何处理，有次数限制，用此方法获取后可能会导致已经获取且在使用的token失效

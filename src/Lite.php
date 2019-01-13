@@ -78,6 +78,43 @@ class Lite
     }
 
     /**
+     * 获取openid
+     * @desc 根据code获取openid，unionid
+     * @return array
+     * @return int ret 状态码：200表示数据获取成功，其他错误码可参考小程序错误码说明
+     * @return array data 返回数据，openid获取失败时为空
+     * @return string code code
+     * @return string iv 会话密钥
+     * @return string encryptedData 解码内容
+     * @return string msg 错误提示信息：如：code been used, hints: [ req_id: OpwajA01912023 ]
+     */
+    public function getUnionid($code, $iv, $encryptedData)
+    {
+        $ids = $this->getOpenid($code);
+        if (!$ids['session_key']) {
+            throw new BadRequestException('获取sessionKey失败', 600);
+        }
+        $sessionkey = str_replace(' ', '+', urldecode(trim($ids['session_key'])));
+//        \PhalApi\DI()->logger->info('sessinokey:', $sessionkey);
+        $iv = str_replace(' ', '+', urldecode($iv));
+        $encryptedData = str_replace(' ', '+', urldecode($encryptedData));
+        $aesKey = base64_decode($sessionkey);
+        $aesIV = base64_decode($iv);
+//        \PhalApi\DI()->logger->info('iv:', $iv);
+        $aesCipher = base64_decode($encryptedData);
+//        \PhalApi\DI()->logger->info('encryptedData:', $encryptedData);
+        $jm = openssl_decrypt($aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+        $jsondecode = json_decode($jm, true);
+//        \PhalApi\DI()->logger->info('rs', $jsondecode);
+        if ($jsondecode['openId']) {
+            return $jsondecode;
+        } else {
+            //openid获取失败
+            throw new BadRequestException($jsondecode['errmsg'], $jsondecode['errcode'] - 400);
+        }
+    }
+
+    /**
      * 获取access_token
      * @desc 直接获取access_token，不加任何处理，有次数限制，用此方法获取后可能会导致已经获取且在使用的token失效
      * @return array
@@ -177,7 +214,6 @@ class Lite
             throw new BadRequestException($jsondecode['errmsg'], $jsondecode['errcode'] - 400);
         }
     }
-
 
     /**
      * 发送模板消息
